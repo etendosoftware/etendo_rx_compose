@@ -1,0 +1,99 @@
+version: "3.7"
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.1.4
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - etendorx_net
+    stdin_open: true
+    tty: true
+  kafka:
+    image: confluentinc/cp-enterprise-kafka:6.1.4
+    depends_on: [ zookeeper ]
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9991
+    ports:
+      - 9092:9092
+    networks:
+      - etendorx_net
+    stdin_open: true
+    tty: true
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    restart: "no"
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka:9092"
+      JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+    depends_on:
+      - "kafka"
+    networks:
+      - etendorx_net
+    stdin_open: true
+    tty: true
+  debezium:
+    image: debezium/connect:1.4
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: connect_configs
+      OFFSET_STORAGE_TOPIC: connect_offsets
+    depends_on: [ kafka ]
+    ports:
+      - 8083:8083
+    networks:
+      - etendorx_net
+    stdin_open: true
+    tty: true
+  debezium-ui:
+    image: debezium/debezium-ui:latest
+    environment:
+      - KAFKA_CONNECT_URIS=http://debezium:8083
+    depends_on: [ debezium ]
+    ports:
+      - 8095:8080
+    networks:
+      - etendorx_net
+    stdin_open: true
+    tty: true
+
+  etendorx_das:
+    container_name: etendorx_das
+    image: registry.futit.cloud/default_etendorx_das:1.0.0
+    ports:
+      - 8092:8092
+    networks:
+      - etendorx_net
+    stdin_open: true
+    tty: true
+
+  etendorx_auth:
+    container_name: etendorx_auth
+    image: registry.futit.cloud/default_etendorx_auth:1.0.0
+    ports:
+      - 8094:8094
+    networks:
+      - etendorx_net
+    stdin_open: true
+    tty: true
+
+  etendorx_edge:
+    container_name: etendorx_edge
+    image: registry.futit.cloud/default_etendorx_edge:1.0.0
+    ports:
+      - 8096:8096
+    networks:
+      - etendorx_net
+    stdin_open: true
+    tty: true
+
+networks:
+  etendorx_net:
+    name: etendorx_net
+
