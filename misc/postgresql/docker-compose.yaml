@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  postgres:
+    image: debezium/postgres:13
+    ports:
+      - 5470:5432
+    healthcheck:
+      test: "pg_isready -U postgres -d etendo"
+      interval: 2s
+      timeout: 20s
+      retries: 10
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=syspass
+      - POSTGRES_DB=etendo
+      - PGPASSWORD=syspass
+    volumes:
+      - ./postgresql-scripts:/docker-entrypoint-initdb.d
+    stdin_open: true
+    tty: true
+    networks:
+      - etendorx_net
+networks:
+  etendorx_net:
+    name: etendorx_net
