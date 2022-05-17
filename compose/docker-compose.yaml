@@ -76,6 +76,10 @@ services:
   etendorx_auth:
     container_name: etendorx_auth
     image: registry.futit.cloud/default_etendorx_auth:1.0.0
+    volumes:
+      - ./resources:/resources
+    environment:
+      PRIVATE_KEY_LOCATION: /resources/private_key.pem
     ports:
       - 8094:8094
     networks:
@@ -86,6 +90,10 @@ services:
   etendorx_edge:
     container_name: etendorx_edge
     image: registry.futit.cloud/default_etendorx_edge:1.0.0
+    volumes:
+      - ./resources:/resources
+    environment:
+      PUBLIC_KEY_LOCATION: /resources/public_key.pem
     ports:
       - 8096:8096
     networks:
