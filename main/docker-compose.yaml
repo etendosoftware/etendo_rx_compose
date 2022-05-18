@@ -101,7 +101,7 @@ services:
     stdin_open: true
     tty: true
 
-  zapier_integration:
+  zapier:
     #container_name: etendorx_zapier_integration
     image: registry.futit.cloud/default_etendorx_zapier_integration:1.0.0
     ports:
