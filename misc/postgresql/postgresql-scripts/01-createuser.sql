@@ -1,1 +1,0 @@
-create user tad with password 'tad' superuser;
