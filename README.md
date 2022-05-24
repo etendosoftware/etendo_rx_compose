@@ -3,9 +3,6 @@
 ## 1. Create keys
 You have to create the private and public keys and save in `/main/resources` directory following the next commands:
 
-```
-  cd main/resources
-```
 Private key generation
 ```
   openssl genrsa -out main/resources/private.pem 2048
